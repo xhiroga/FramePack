@@ -21,7 +21,7 @@ uv run demo_gradio.py --extra-model-paths-config extra_model_paths.yaml
 
 ## Original
 
-lllyasviel氏, kohya-ss氏, その他多くの方々の努力に感謝します。
+Thanks to the efforts of lllyasviel, kohya-ss, and many others.
 
 - [FramePack](https://github.com/lllyasviel/FramePack)
 - [FramePack LoRAReady](https://github.com/kohya-ss/FramePack-LoRAReady)
