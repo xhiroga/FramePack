@@ -1,11 +1,26 @@
 import os
+
 import torch
 from safetensors.torch import load_file
 from tqdm import tqdm
 
 
+def load_lora_files(extra_lora_dirs: list[str]) -> list[str]:
+    lora_files = []
+    if extra_lora_dirs:
+        for lora_dir in extra_lora_dirs:
+            if os.path.exists(lora_dir):
+                for file in os.listdir(lora_dir):
+                    if file.endswith(".safetensors"):
+                        lora_files.append(os.path.join(lora_dir, file))
+    return lora_files
+
+
 def merge_lora_to_state_dict(
-    state_dict: dict[str, torch.Tensor], lora_file: str, multiplier: float, device: torch.device
+    state_dict: dict[str, torch.Tensor],
+    lora_file: str,
+    multiplier: float,
+    device: torch.device,
 ) -> dict[str, torch.Tensor]:
     """
     Merge LoRA weights into the state dict of a model.
@@ -15,10 +30,13 @@ def merge_lora_to_state_dict(
     # Check the format of the LoRA file
     keys = list(lora_sd.keys())
     if keys[0].startswith("lora_unet_"):
-        print(f"Musubi Tuner LoRA detected")
+        print("Musubi Tuner LoRA detected")
         return merge_musubi_tuner(lora_sd, state_dict, multiplier, device)
 
-    transformer_prefixes = ["diffusion_model", "transformer"]  # to ignore Text Encoder modules
+    transformer_prefixes = [
+        "diffusion_model",
+        "transformer",
+    ]  # to ignore Text Encoder modules
     lora_suffix = None
     prefix = None
     for key in keys:
@@ -32,15 +50,21 @@ def merge_lora_to_state_dict(
             break
 
     if lora_suffix == "lora_A" and prefix is not None:
-        print(f"Diffusion-pipe (?) LoRA detected")
-        return merge_diffusion_pipe_or_something(lora_sd, state_dict, "lora_unet_", multiplier, device)
+        print("Diffusion-pipe (?) LoRA detected")
+        return merge_diffusion_pipe_or_something(
+            lora_sd, state_dict, "lora_unet_", multiplier, device
+        )
 
     print(f"LoRA file format not recognized: {os.path.basename(lora_file)}")
     return state_dict
 
 
 def merge_diffusion_pipe_or_something(
-    lora_sd: dict[str, torch.Tensor], state_dict: dict[str, torch.Tensor], prefix: str, multiplier: float, device: torch.device
+    lora_sd: dict[str, torch.Tensor],
+    state_dict: dict[str, torch.Tensor],
+    prefix: str,
+    multiplier: float,
+    device: torch.device,
 ) -> dict[str, torch.Tensor]:
     """
     Convert LoRA weights to the format used by the diffusion pipeline to Musubi Tuner.
@@ -59,7 +83,11 @@ def merge_diffusion_pipe_or_something(
             print(f"unexpected key: {key} in diffusers format")
             continue
 
-        new_key = f"{prefix}{key_body}".replace(".", "_").replace("_lora_A_", ".lora_down.").replace("_lora_B_", ".lora_up.")
+        new_key = (
+            f"{prefix}{key_body}".replace(".", "_")
+            .replace("_lora_A_", ".lora_down.")
+            .replace("_lora_B_", ".lora_up.")
+        )
         new_weights_sd[new_key] = weight
 
         lora_name = new_key.split(".")[0]  # before first dot
@@ -74,7 +102,10 @@ def merge_diffusion_pipe_or_something(
 
 
 def merge_musubi_tuner(
-    lora_sd: dict[str, torch.Tensor], state_dict: dict[str, torch.Tensor], multiplier: float, device: torch.device
+    lora_sd: dict[str, torch.Tensor],
+    state_dict: dict[str, torch.Tensor],
+    multiplier: float,
+    device: torch.device,
 ) -> dict[str, torch.Tensor]:
     """
     Merge LoRA weights into the state dict of a model.
@@ -108,7 +139,9 @@ def merge_musubi_tuner(
         alpha_key = key[: key.index("lora_down")] + "alpha"
 
         # find original key for this lora
-        module_name = ".".join(key.split(".")[:-2])  # remove trailing ".lora_down.weight"
+        module_name = ".".join(
+            key.split(".")[:-2]
+        )  # remove trailing ".lora_down.weight"
         if module_name not in name_to_original_key:
             print(f"No module found for LoRA weight: {key}")
             continue
@@ -142,12 +175,16 @@ def merge_musubi_tuner(
             weight = (
                 weight
                 + multiplier
-                * (up_weight.squeeze(3).squeeze(2) @ down_weight.squeeze(3).squeeze(2)).unsqueeze(2).unsqueeze(3)
+                * (up_weight.squeeze(3).squeeze(2) @ down_weight.squeeze(3).squeeze(2))
+                .unsqueeze(2)
+                .unsqueeze(3)
                 * scale
             )
         else:
             # conv2d 3x3
-            conved = torch.nn.functional.conv2d(down_weight.permute(1, 0, 2, 3), up_weight).permute(1, 0, 2, 3)
+            conved = torch.nn.functional.conv2d(
+                down_weight.permute(1, 0, 2, 3), up_weight
+            ).permute(1, 0, 2, 3)
             # logger.info(conved.size(), weight.size(), module.stride, module.padding)
             weight = weight + multiplier * conved * scale
 
@@ -157,7 +194,9 @@ def merge_musubi_tuner(
     return state_dict
 
 
-def convert_hunyuan_to_framepack(lora_sd: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
+def convert_hunyuan_to_framepack(
+    lora_sd: dict[str, torch.Tensor],
+) -> dict[str, torch.Tensor]:
     """
     Convert HunyuanVideo LoRA weights to FramePack format.
     """
@@ -181,7 +220,9 @@ def convert_hunyuan_to_framepack(lora_sd: dict[str, torch.Tensor]) -> dict[str, 
             key = key.replace("linear2", "proj_out")
             key = key.replace("modulation_linear", "norm_linear")
         else:
-            print(f"Unsupported module name: {key}, only double_blocks and single_blocks are supported")
+            print(
+                f"Unsupported module name: {key}, only double_blocks and single_blocks are supported"
+            )
             continue
 
         if "QKVM" in key:
@@ -192,14 +233,18 @@ def convert_hunyuan_to_framepack(lora_sd: dict[str, torch.Tensor]) -> dict[str, 
             key_m = key.replace("attn_to_QKVM", "proj_mlp")
             if "_down" in key or "alpha" in key:
                 # copy QKVM weight or alpha to Q, K, V, M
-                assert "alpha" in key or weight.size(1) == 3072, f"QKVM weight size mismatch: {key}. {weight.size()}"
+                assert "alpha" in key or weight.size(1) == 3072, (
+                    f"QKVM weight size mismatch: {key}. {weight.size()}"
+                )
                 new_lora_sd[key_q] = weight
                 new_lora_sd[key_k] = weight
                 new_lora_sd[key_v] = weight
                 new_lora_sd[key_m] = weight
             elif "_up" in key:
                 # split QKVM weight into Q, K, V, M
-                assert weight.size(0) == 21504, f"QKVM weight size mismatch: {key}. {weight.size()}"
+                assert weight.size(0) == 21504, (
+                    f"QKVM weight size mismatch: {key}. {weight.size()}"
+                )
                 new_lora_sd[key_q] = weight[:3072]
                 new_lora_sd[key_k] = weight[3072 : 3072 * 2]
                 new_lora_sd[key_v] = weight[3072 * 2 : 3072 * 3]
@@ -214,13 +259,17 @@ def convert_hunyuan_to_framepack(lora_sd: dict[str, torch.Tensor]) -> dict[str, 
             key_v = key.replace("QKV", "v")
             if "_down" in key or "alpha" in key:
                 # copy QKV weight or alpha to Q, K, V
-                assert "alpha" in key or weight.size(1) == 3072, f"QKV weight size mismatch: {key}. {weight.size()}"
+                assert "alpha" in key or weight.size(1) == 3072, (
+                    f"QKV weight size mismatch: {key}. {weight.size()}"
+                )
                 new_lora_sd[key_q] = weight
                 new_lora_sd[key_k] = weight
                 new_lora_sd[key_v] = weight
             elif "_up" in key:
                 # split QKV weight into Q, K, V
-                assert weight.size(0) == 3072 * 3, f"QKV weight size mismatch: {key}. {weight.size()}"
+                assert weight.size(0) == 3072 * 3, (
+                    f"QKV weight size mismatch: {key}. {weight.size()}"
+                )
                 new_lora_sd[key_q] = weight[:3072]
                 new_lora_sd[key_k] = weight[3072 : 3072 * 2]
                 new_lora_sd[key_v] = weight[3072 * 2 :]

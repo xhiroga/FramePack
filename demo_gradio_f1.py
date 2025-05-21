@@ -57,12 +57,6 @@ parser.add_argument("--share", action="store_true")
 parser.add_argument("--server", type=str, default="0.0.0.0")
 parser.add_argument("--port", type=int, required=False)
 parser.add_argument("--hf-home", type=str, default=None)
-parser.add_argument(
-    "--extra-model-paths-config",
-    type=str,
-    default=None,
-    dest="extra_model_paths_config",
-)
 args = parser.parse_args()
 
 print(args)

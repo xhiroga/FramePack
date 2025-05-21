@@ -22,6 +22,7 @@ dependencies = [
     "torchsde>=0.2.6",
     "transformers>=4.51.3",
     "av>=14.3.0",
+    "tqdm>=4.67.1",
 ]
 
 [tool.uv]

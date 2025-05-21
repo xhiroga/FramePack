@@ -57,7 +57,7 @@ from utils.fp8_optimization_utils import (
     apply_fp8_monkey_patch,
     optimize_state_dict_with_fp8,
 )
-from utils.lora_utils import merge_lora_to_state_dict
+from utils.lora_utils import load_lora_files, merge_lora_to_state_dict
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--share", action="store_true")
@@ -65,10 +65,11 @@ parser.add_argument("--server", type=str, default="0.0.0.0")
 parser.add_argument("--port", type=int, required=False)
 parser.add_argument("--hf-home", type=str, default=None)
 parser.add_argument(
-    "--extra-model-paths-config",
+    "--extra-lora-dirs",
     type=str,
+    nargs="+",
     default=None,
-    dest="extra_model_paths_config",
+    dest="extra_lora_dirs",
 )
 args = parser.parse_args()
 
@@ -767,13 +768,16 @@ with block:
                 )
 
             with gr.Group():
-                lora_file = gr.File(
-                    label="LoRA File", file_count="single", type="filepath"
+                lora_file = gr.Dropdown(
+                    label="LoRA File",
+                    choices=load_lora_files(args.extra_lora_dirs),
+                    value=None,
+                    type="value",
                 )
                 lora_multiplier = gr.Slider(
                     label="LoRA Multiplier",
-                    minimum=0.0,
-                    maximum=1.0,
+                    minimum=-0.0,
+                    maximum=10.0,
                     value=0.8,
                     step=0.1,
                 )

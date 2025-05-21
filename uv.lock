@@ -201,6 +201,7 @@ dependencies = [
     { name = "torch", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "torchsde", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "torchvision", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "tqdm", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "transformers", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
 ]
 
@@ -222,6 +223,7 @@ requires-dist = [
     { name = "torch", specifier = ">=2.8.0.dev20250516", index = "https://download.pytorch.org/whl/nightly/cu128" },
     { name = "torchsde", specifier = ">=0.2.6" },
     { name = "torchvision", specifier = ">=0.22.0.dev20250516", index = "https://download.pytorch.org/whl/nightly/cu128" },
+    { name = "tqdm", specifier = ">=4.67.1" },
     { name = "transformers", specifier = ">=4.51.3" },
 ]
 
