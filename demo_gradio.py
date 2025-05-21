@@ -63,6 +63,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--share", action="store_true")
 parser.add_argument("--server", type=str, default="0.0.0.0")
 parser.add_argument("--port", type=int, required=False)
+parser.add_argument("--hf-home", type=str, default=None)
 parser.add_argument(
     "--extra-model-paths-config",
     type=str,
@@ -73,9 +74,12 @@ args = parser.parse_args()
 
 print(args)
 
-os.environ["HF_HOME"] = os.path.abspath(
-    os.path.realpath(os.path.join(os.path.dirname(__file__), "./hf_download"))
-)
+if args.hf_home is not None:
+    os.environ["HF_HOME"] = os.path.abspath(os.path.realpath(args.hf_home))
+elif "HF_HOME" not in os.environ:
+    os.environ["HF_HOME"] = os.path.abspath(
+        os.path.realpath(os.path.join(os.path.dirname(__file__), "./hf_download"))
+    )
 
 free_mem_gb = get_cuda_free_memory_gb(gpu)
 high_vram = free_mem_gb > 60
@@ -825,9 +829,4 @@ with block:
     end_button.click(fn=end_process)
 
 
-block.launch(
-    server_name=args.server,
-    server_port=args.port,
-    share=args.share,
-    extra_models_path=args.extra_model_paths_config,
-)
+block.launch(server_name=args.server, server_port=args.port, share=args.share)

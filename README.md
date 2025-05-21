@@ -17,7 +17,7 @@ Developers are free to use the code in this repository.
 ## How to run
 
 ```sh
-uv run demo_gradio.py --extra-model-paths-config extra_model_paths.yaml
+uv run demo_gradio.py --hf-home ~/.cache/huggingface
 ```
 
 ## Original
