@@ -1,3 +1,47 @@
+# FramePack-LoRAReady
+
+FramePack-LoRAReady is a modified version of FramePack with LoRA loading and fp8 quantization features added to the official implementation of FramePack. This repository is licensed under the same license as the official implementation (ASL 2.0).
+
+This repository has the following features added:
+
+- LoRA loading: Load LoRA for FramePack, HunyuanVideo (trained by [Musubi Tuner](https://github.com/kohya-ss/musubi-tuner)), and other formats (diffusion-pipe?).
+    - It is not verified how HunyuanVideo LoRA is effective for FramePack.
+- fp8 quantization: Quantize the transformer weights to fp8, reducing GPU memory usage. The CPU offloading is reduced, so it is expected to be faster.
+
+Currently, there are some issues with high main RAM consumption, but this is similar to the official FramePack, so it is unclear whether it is a bug in this repository.
+
+## Installation
+
+Clone this repository next to the official FramePack (in the same parent directory). If you already have weights downloaded in FramePack (if `../FramePack/hf_download` exists), it will use those weights.
+
+Then follow the installation instructions for the official FramePack.
+
+<details>
+<summary>クリックして日本語を表示</summary>
+
+ **FramePack-LoRAReady**
+
+FramePack-LoRAReadyは、FramePackの公式実装にLoRA読み込み機能とfp8量子化を追加したものです。追加部分のコードのライセンスは公式実装（ASL 2.0）に従います。
+
+以下の機能が追加されています。
+
+- LoRA読み込み機能: [Musubi Tuner](https://github.com/kohya-ss/musubi-tuner) のFramePack用LoRA、HunyuanVideo用のLoRA、その他形式（diffusion-pipe?）のLoRAを読み込むことができます。
+    - HunyuanVideo用LoRAがFramePackにどこまで有効かは検証されていません。
+- fp8量子化: Transformerの重みをfp8に量子化することで、GPUメモリの使用量を削減します。CPU offloadingが減るため、速度向上が期待できます。
+
+メインRAMを大量に消費する事象が発生していますが、公式のFramePackでもほぼ同様のため、このリポジトリの不具合かどうかは不明です。
+
+**インストール**
+
+公式のFramePackの隣に（同じ親ディレクトリの中に）cloneしてください。すでにFramePackの中に重みがダウンロードされていれば（`../FramePack/hf_download`があれば）その重みを使います。
+
+あとは公式のFramePackのインストール手順に従ってください。
+</details>
+
+--- 
+
+Original README is below:
+
 <p align="center">
     <img src="https://github.com/user-attachments/assets/2cc030b4-87e1-40a0-b5bf-1b7d6b62820b" width="300">
 </p>
