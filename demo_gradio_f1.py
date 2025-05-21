@@ -64,7 +64,6 @@ os.environ["HF_HOME"] = os.path.abspath(
     os.path.realpath(os.path.join(os.path.dirname(__file__), "./hf_download"))
 )
 
-
 free_mem_gb = get_cuda_free_memory_gb(gpu)
 high_vram = free_mem_gb > 60
 

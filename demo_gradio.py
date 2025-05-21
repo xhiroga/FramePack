@@ -73,24 +73,9 @@ args = parser.parse_args()
 
 print(args)
 
-# os.environ["HF_HOME"] = os.path.abspath(os.path.realpath(os.path.join(os.path.dirname(__file__), "./hf_download")))
-
-# we use HF_HOME in following order:
-# 1. "../FramePack/hf_download" if exists.
-# 2. "./hf_download"
-hf_home_path_1 = os.path.abspath(
-    os.path.realpath(
-        os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), "FramePack", "hf_download"
-        )
-    )
+os.environ["HF_HOME"] = os.path.abspath(
+    os.path.realpath(os.path.join(os.path.dirname(__file__), "./hf_download"))
 )
-hf_home_path_2 = os.path.abspath(
-    os.path.realpath(os.path.join(os.path.dirname(__file__), "hf_download"))
-)
-hf_home = hf_home_path_1 if os.path.exists(hf_home_path_1) else hf_home_path_2
-os.environ["HF_HOME"] = hf_home
-print(f"Set HF_HOME env to {hf_home}")
 
 free_mem_gb = get_cuda_free_memory_gb(gpu)
 high_vram = free_mem_gb > 60
