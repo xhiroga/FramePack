@@ -1,4 +1,4 @@
-# FramePack-Dev (forked by @xhiroga)
+# FramePack-Dev
 
 FramePack-Dev is a fork that adds the following features to FramePack and FramePack LoRAReady.
 
