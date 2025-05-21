@@ -1,5 +1,5 @@
 [project]
-name = "framepack"
+name = "framepack-dev"
 version = "1.0.0"
 description = "FramePack"
 readme = "README.md"
