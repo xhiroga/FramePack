@@ -5,6 +5,7 @@ FramePack-Dev is a fork that adds the following features to FramePack and FrameP
 - Standalone execution. Run `uv run demo_gradio.py`
 - Add extra model directories. `--extra-model-paths-config`
 - Embedding metadata to the generated video.
+- No Windows support. Use WSL2.
 
 ## Disclaimer
 
