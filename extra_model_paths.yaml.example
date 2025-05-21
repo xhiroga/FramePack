@@ -1,0 +1,20 @@
+MyExtraModels:
+  LLM: /workspace/models/LLM
+  checkpoints: /workspace/models/checkpoints
+  clip: /workspace/models/clip
+  clip_vision: /workspace/models/clip_vision
+  configs: /workspace/models/configs
+  controlnet: /workspace/models/controlnet
+  diffusers: /workspace/models/diffusers
+  diffusion_models: /workspace/models/diffusion_models
+  embeddings: /workspace/models/embeddings
+  gligen: /workspace/models/gligen
+  hypernetworks: /workspace/models/hypernetworks
+  loras: /workspace/models/loras
+  photomaker: /workspace/models/photomaker
+  style_models: /workspace/models/style_models
+  text_encoders: /workspace/models/text_encoders
+  unet: /workspace/models/unet
+  upscale_models: /workspace/models/upscale_models
+  vae: /workspace/models/vae
+  vae_approx: /workspace/models/vae_approx

@@ -66,6 +66,7 @@ parser.add_argument("--share", action="store_true")
 parser.add_argument("--server", type=str, default="0.0.0.0")
 parser.add_argument("--port", type=int, required=False)
 parser.add_argument("--inbrowser", action="store_true")
+parser.add_argument("--extra-model-paths-config", type=str, default=None, dest="extra_model_paths_config")
 args = parser.parse_args()
 
 # for win desktop probably use --server 127.0.0.1 --inbrowser
@@ -642,4 +643,5 @@ block.launch(
     server_port=args.port,
     share=args.share,
     inbrowser=args.inbrowser,
+    extra_models_path=args.extra_model_paths_config,
 )

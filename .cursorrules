@@ -1,0 +1,13 @@
+# Rules
+
+## Meta Rules
+
+- Write comments and commit messages in English.
+- Commit messages should be formatted as follows:
+  - `feat: <description>`
+  - `fix: <description>`
+  - `refactor: <description>`
+  - `test: <description>`
+  - `chore: <description>`
+  - `style: <description>`
+  - `docs: <description>`
