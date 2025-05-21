@@ -532,10 +532,12 @@ def end_process():
 
 
 quick_prompts = [
-    "The girl dances gracefully, with clear movements, full of charm.",
-    "A character doing some simple body movements.",
+    [x]
+    for x in [
+        "The girl dances gracefully, with clear movements, full of charm.",
+        "A character doing some simple body movements.",
+    ]
 ]
-quick_prompts = [[x] for x in quick_prompts]
 
 
 css = make_progress_bar_css()
