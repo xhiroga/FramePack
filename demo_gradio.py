@@ -564,7 +564,7 @@ def worker(
         "prompt": prompt,
         "n_prompt": n_prompt,
         "seed": seed,
-        "total_second_length": total_frames / 30,
+        "total_second_length": round(total_frames / 30, 2),
         "total_frames": total_frames,
         "latent_window_size": latent_window_size,
         "steps": steps,
