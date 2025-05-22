@@ -179,7 +179,7 @@ def worker(
     prompt,
     n_prompt,
     seed,
-    total_second_length,
+    total_frames,
     latent_window_size,
     steps,
     cfg,
@@ -204,7 +204,7 @@ def worker(
         or fp8_optimization != previous_fp8_optimization
     )
 
-    total_latent_sections = (total_second_length * 30) / (latent_window_size * 4)
+    total_latent_sections = total_frames / (latent_window_size * 4)
     total_latent_sections = int(max(round(total_latent_sections), 1))
 
     job_id = generate_timestamp()
@@ -564,7 +564,8 @@ def worker(
         "prompt": prompt,
         "n_prompt": n_prompt,
         "seed": seed,
-        "total_second_length": total_second_length,
+        "total_second_length": total_frames / 30,
+        "total_frames": total_frames,
         "latent_window_size": latent_window_size,
         "steps": steps,
         "cfg": cfg,
@@ -587,7 +588,7 @@ def process(
     prompt,
     n_prompt,
     seed,
-    total_second_length,
+    total_frames,
     latent_window_size,
     steps,
     cfg,
@@ -613,7 +614,7 @@ def process(
         prompt,
         n_prompt,
         seed,
-        total_second_length,
+        total_frames,
         latent_window_size,
         steps,
         cfg,
@@ -726,6 +727,25 @@ with block:
                     value=5,
                     step=0.1,
                 )
+                total_frames = gr.Slider(
+                    label="Total Frames",
+                    minimum=1,
+                    maximum=3600,
+                    value=150,
+                    step=1,
+                )
+
+                total_second_length.input(
+                    fn=lambda x: gr.update(value=int(x * 30)),
+                    inputs=[total_second_length],
+                    outputs=[total_frames],
+                )
+                total_frames.input(
+                    fn=lambda x: gr.update(value=x / 30),
+                    inputs=[total_frames],
+                    outputs=[total_second_length],
+                )
+
                 latent_window_size = gr.Slider(
                     label="Latent Window Size",
                     minimum=1,
@@ -832,7 +852,7 @@ with block:
         prompt,
         n_prompt,
         seed,
-        total_second_length,
+        total_frames,
         latent_window_size,
         steps,
         cfg,
