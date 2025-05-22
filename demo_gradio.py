@@ -682,7 +682,7 @@ quick_prompts = [
 css = make_progress_bar_css()
 block = gr.Blocks(css=css).queue()
 with block:
-    gr.Markdown("# FramePack")
+    gr.Markdown("# FramePack Dev")
     with gr.Row():
         with gr.Column():
             input_image = gr.Image(
