@@ -789,7 +789,7 @@ with block:
             with gr.Group():
                 lora_file = gr.Dropdown(
                     label="LoRA File",
-                    choices=load_lora_files(args.extra_lora_dirs),
+                    choices=[],
                     value=None,
                     type="value",
                 )
@@ -819,6 +819,12 @@ with block:
 
     gr.HTML(
         '<div style="text-align:center; margin-top:20px;">Share your results and find ideas at the <a href="https://x.com/search?q=framepack&f=live" target="_blank">FramePack Twitter (X) thread</a></div>'
+    )
+
+    block.load(
+        lambda: gr.Dropdown(choices=load_lora_files(args.extra_lora_dirs)),
+        inputs=None,
+        outputs=lora_file,
     )
 
     ips = [
