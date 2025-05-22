@@ -732,7 +732,7 @@ with block:
                     maximum=33,
                     value=9,
                     step=1,
-                    visible=False,
+                    visible=True,
                 )  # Should not change
                 steps = gr.Slider(
                     label="Steps",
