@@ -29,7 +29,7 @@ ffprobe -v quiet -print_format json -show_format './outputs/250522_170848_093_69
 
 ## Original
 
-Thanks to the efforts of @lllyasviel, @kohya-ss, and many others.
+Thanks to the efforts of [@lllyasviel](https://github.com/lllyasviel), [@kohya-ss](https://github.com/kohya-ss), and many others.
 
 - [FramePack](https://github.com/lllyasviel/FramePack)
 - [FramePack LoRAReady](https://github.com/kohya-ss/FramePack-LoRAReady)
