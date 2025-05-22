@@ -20,9 +20,16 @@ Developers are free to use the code in this repository.
 uv run demo_gradio.py --hf-home ~/.cache/huggingface --extra-lora-dirs ~/Documents/GitHub/BLSP-turntable-fp
 ```
 
+## How to see metadata
+
+```sh
+# Example
+ffprobe -v quiet -print_format json -show_format './outputs/250522_170848_093_6971_19.mp4'
+```
+
 ## Original
 
-Thanks to the efforts of lllyasviel, kohya-ss, and many others.
+Thanks to the efforts of @lllyasviel, @kohya-ss, and many others.
 
 - [FramePack](https://github.com/lllyasviel/FramePack)
 - [FramePack LoRAReady](https://github.com/kohya-ss/FramePack-LoRAReady)

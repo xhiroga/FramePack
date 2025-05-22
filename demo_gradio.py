@@ -58,12 +58,14 @@ from utils.fp8_optimization_utils import (
     optimize_state_dict_with_fp8,
 )
 from utils.lora_utils import load_lora_files, merge_lora_to_state_dict
+from utils.metadata import add_metadata
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--share", action="store_true")
 parser.add_argument("--server", type=str, default="0.0.0.0")
 parser.add_argument("--port", type=int, required=False)
 parser.add_argument("--hf-home", type=str, default=None)
+parser.add_argument("--output_dir", type=str, default="./outputs/", dest="output_dir")
 parser.add_argument(
     "--extra-lora-dirs",
     type=str,
@@ -168,8 +170,7 @@ else:
 
 stream = AsyncStream()
 
-outputs_folder = "./outputs/"
-os.makedirs(outputs_folder, exist_ok=True)
+os.makedirs(args.output_dir, exist_ok=True)
 
 
 @torch.no_grad()
@@ -262,7 +263,7 @@ def worker(
         )
 
         Image.fromarray(input_image_np).save(
-            os.path.join(outputs_folder, f"{job_id}.png")
+            os.path.join(args.output_dir, f"{job_id}.png")
         )
 
         input_image_pt = torch.from_numpy(input_image_np).float() / 127.5 - 1
@@ -538,7 +539,7 @@ def worker(
                 unload_complete_models()
 
             output_filename = os.path.join(
-                outputs_folder, f"{job_id}_{total_generated_latent_frames}.mp4"
+                args.output_dir, f"{job_id}_{total_generated_latent_frames}.mp4"
             )
 
             save_bcthw_as_mp4(history_pixels, output_filename, fps=30, crf=mp4_crf)
@@ -559,6 +560,24 @@ def worker(
                 text_encoder, text_encoder_2, image_encoder, vae, transformer
             )
 
+    metadata = {
+        "prompt": prompt,
+        "n_prompt": n_prompt,
+        "seed": seed,
+        "total_second_length": total_second_length,
+        "latent_window_size": latent_window_size,
+        "steps": steps,
+        "cfg": cfg,
+        "gs": gs,
+        "rs": rs,
+        "gpu_memory_preservation": gpu_memory_preservation,
+        "use_teacache": use_teacache,
+        "mp4_crf": mp4_crf,
+        "lora_file": lora_file,
+        "lora_multiplier": lora_multiplier,
+        "fp8_optimization": fp8_optimization,
+    }
+    add_metadata(output_filename, metadata)
     stream.output_queue.push(("end", None))
     return
 
