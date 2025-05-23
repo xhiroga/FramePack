@@ -67,11 +67,11 @@ parser.add_argument("--port", type=int, required=False)
 parser.add_argument("--hf-home", type=str, default=None)
 parser.add_argument("--output_dir", type=str, default="./outputs/", dest="output_dir")
 parser.add_argument(
-    "--extra-lora-dirs",
+    "--lora-dirs",
     type=str,
     nargs="+",
     default=None,
-    dest="extra_lora_dirs",
+    dest="lora_dirs",
 )
 args = parser.parse_args()
 
@@ -842,7 +842,7 @@ with block:
     )
 
     block.load(
-        lambda: gr.Dropdown(choices=load_lora_files(args.extra_lora_dirs)),
+        lambda: gr.Dropdown(choices=load_lora_files(args.lora_dirs)),
         inputs=None,
         outputs=lora_file,
     )
