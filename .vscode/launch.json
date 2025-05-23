@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "demo_gradio.py with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "demo_gradio.py",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}",
+            "justMyCode": false,
+        }
+    ]
+}
