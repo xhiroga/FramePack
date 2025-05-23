@@ -3,7 +3,7 @@
 FramePack-Dev is a fork that adds the following features to FramePack and FramePack LoRAReady.
 
 - Standalone execution. Run `uv run demo_gradio.py`
-- Add extra model directories. `--extra-model-paths-config`
+- Add extra LoRA directories. `--extra-lora-dirs`
 - Embedding metadata to the generated video.
 - No Windows support. Use WSL2.
 
