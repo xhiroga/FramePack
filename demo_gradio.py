@@ -729,32 +729,27 @@ with block:
                 )  # Not used
                 seed = gr.Number(label="Seed", value=31337, precision=0)
 
-                total_second_length = gr.Slider(
-                    label="Total Video Length (Seconds)",
-                    minimum=1,
-                    maximum=120,
-                    value=5,
-                    step=0.1,
-                )
+                default_latent_window_size = 9
                 total_frames = gr.Slider(
                     label="Total Frames",
+                    info="latent_window_size * [4](https://github.com/huggingface/diffusers/blob/f161e277d0ec534afa4dfc461bc5baacffd7278b/src/diffusers/models/autoencoders/autoencoder_kl_hunyuan_video.py#L434) * n + 1",
                     minimum=1,
-                    maximum=3600,
-                    value=150,
+                    maximum=default_latent_window_size * 4 * 100 + 1,
+                    value=default_latent_window_size * 4 + 1,
                     step=1,
                 )
-
-                total_second_length.input(
-                    fn=lambda x: gr.update(value=int(x * 30)),
-                    inputs=[total_second_length],
-                    outputs=[total_frames],
+                total_second_length = gr.Slider(
+                    label="Total Video Length (Seconds)",
+                    minimum=round(1 / 30, 2),
+                    maximum=round((default_latent_window_size * 4 * 100 + 1) / 30, 2),
+                    value=round((default_latent_window_size * 4 + 1) / 30, 2),
+                    interactive=False,
                 )
                 total_frames.input(
                     fn=lambda x: gr.update(value=x / 30),
                     inputs=[total_frames],
                     outputs=[total_second_length],
                 )
-
                 latent_window_size = gr.Slider(
                     label="Latent Window Size",
                     minimum=1,
@@ -762,7 +757,34 @@ with block:
                     value=9,
                     step=1,
                     visible=True,
-                )  # Should not change
+                )
+
+                def update_total_frames(
+                    latent_window_size: int,
+                ) -> tuple[gr.Slider, gr.Slider]:
+                    minimum_total_frames = 1
+                    maximum_total_frames = latent_window_size * 4 * 100 + 1
+                    default_total_frames = latent_window_size * 4 + 1
+                    return (
+                        gr.Slider(
+                            minimum=minimum_total_frames,
+                            maximum=maximum_total_frames,
+                            value=default_total_frames,
+                            step=latent_window_size * 4,
+                        ),
+                        gr.Slider(
+                            minimum=round(minimum_total_frames / 30, 2),
+                            maximum=round(maximum_total_frames / 30, 2),
+                            value=round(default_total_frames / 30, 2),
+                        ),
+                    )
+
+                latent_window_size.input(
+                    fn=update_total_frames,
+                    inputs=[latent_window_size],
+                    outputs=[total_frames, total_second_length],
+                )
+
                 steps = gr.Slider(
                     label="Steps",
                     minimum=1,
