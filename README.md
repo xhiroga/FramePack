@@ -5,6 +5,7 @@ FramePack-Dev is a fork that adds the following features to FramePack and FrameP
 - Standalone execution. Run `uv run demo_gradio.py`
 - LoRA directories by argument. `--lora-dirs`
 - Embedding metadata to the generated video.
+- Strict `Total Frames` specification considering `Latent Window Size`
 - No Windows support. Use WSL2.
 
 ## Disclaimer
