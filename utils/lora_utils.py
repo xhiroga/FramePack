@@ -13,6 +13,7 @@ def load_lora_files(extra_lora_dirs: list[str]) -> list[str]:
                 for file in os.listdir(lora_dir):
                     if file.endswith(".safetensors"):
                         lora_files.append(os.path.join(lora_dir, file))
+    lora_files.sort()
     return lora_files
 
 
