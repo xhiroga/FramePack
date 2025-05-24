@@ -90,30 +90,30 @@ high_vram = free_mem_gb > 60
 print(f"Free VRAM {free_mem_gb} GB")
 print(f"High-VRAM Mode: {high_vram}")
 
-text_encoder = LlamaModel.from_pretrained(
+text_encoder: LlamaModel = LlamaModel.from_pretrained(
     "hunyuanvideo-community/HunyuanVideo",
     subfolder="text_encoder",
     torch_dtype=torch.float16,
 ).cpu()
-text_encoder_2 = CLIPTextModel.from_pretrained(
+text_encoder_2: CLIPTextModel = CLIPTextModel.from_pretrained(
     "hunyuanvideo-community/HunyuanVideo",
     subfolder="text_encoder_2",
     torch_dtype=torch.float16,
 ).cpu()
-tokenizer = LlamaTokenizerFast.from_pretrained(
+tokenizer: LlamaTokenizerFast = LlamaTokenizerFast.from_pretrained(
     "hunyuanvideo-community/HunyuanVideo", subfolder="tokenizer"
 )
-tokenizer_2 = CLIPTokenizer.from_pretrained(
+tokenizer_2: CLIPTokenizer = CLIPTokenizer.from_pretrained(
     "hunyuanvideo-community/HunyuanVideo", subfolder="tokenizer_2"
 )
-vae = AutoencoderKLHunyuanVideo.from_pretrained(
+vae: AutoencoderKLHunyuanVideo = AutoencoderKLHunyuanVideo.from_pretrained(
     "hunyuanvideo-community/HunyuanVideo", subfolder="vae", torch_dtype=torch.float16
 ).cpu()
 
-feature_extractor = SiglipImageProcessor.from_pretrained(
+feature_extractor: SiglipImageProcessor = SiglipImageProcessor.from_pretrained(
     "lllyasviel/flux_redux_bfl", subfolder="feature_extractor"
 )
-image_encoder = SiglipVisionModel.from_pretrained(
+image_encoder: SiglipVisionModel = SiglipVisionModel.from_pretrained(
     "lllyasviel/flux_redux_bfl", subfolder="image_encoder", torch_dtype=torch.float16
 ).cpu()
 
@@ -372,9 +372,10 @@ def worker(
         )
 
         rnd = torch.Generator("cpu").manual_seed(seed)
+        # Due to convolution parameters, the number of pixel frames per latent representation frame is 4 * latent_window_size - 3.
         num_frames = latent_window_size * 4 - 3
 
-        history_latents = torch.zeros(
+        history_latents: torch.Tensor = torch.zeros(
             size=(1, 16, 1 + 2 + 16, height // 8, width // 8), dtype=torch.float32
         ).cpu()
         history_pixels = None
@@ -467,7 +468,8 @@ def worker(
                 )
                 return
 
-            generated_latents = sample_hunyuan(
+            # Float32[torch.Tensor, "1, 16, latent_window_size, height // 8, width // 8"]
+            generated_latents: torch.Tensor = sample_hunyuan(
                 transformer=transformer,
                 sampler="unipc",
                 width=width,
@@ -504,7 +506,8 @@ def worker(
                 )
 
             total_generated_latent_frames += int(generated_latents.shape[2])
-            history_latents = torch.cat(
+            # Float32[torch.Tensor, "1, 16, total_generated_latent_frames + 19, height // 8, width // 8"]
+            history_latents: torch.Tensor = torch.cat(
                 [generated_latents.to(history_latents), history_latents], dim=2
             )
 
@@ -514,24 +517,30 @@ def worker(
                 )
                 load_model_as_complete(vae, target_device=gpu)
 
-            real_history_latents = history_latents[
+            # Float32[torch.Tensor, "1, 16, total_generated_latent_frames, height // 8, width // 8"]
+            real_history_latents: torch.Tensor = history_latents[
                 :, :, :total_generated_latent_frames, :, :
             ]
 
             if history_pixels is None:
-                history_pixels = vae_decode(real_history_latents, vae).cpu()
+                # Float32[torch.Tensor, "1, 3, total_generated_latent_frames, ?, ?"]
+                history_pixels: torch.Tensor = vae_decode(
+                    real_history_latents, vae
+                ).cpu()
             else:
-                section_latent_frames = (
+                section_latent_frames: int = (
                     (latent_window_size * 2 + 1)
                     if is_last_section
                     else (latent_window_size * 2)
                 )
                 overlapped_frames = latent_window_size * 4 - 3
 
-                current_pixels = vae_decode(
+                # Float32[torch.Tensor, "1, 3, section_latent_frames * 4 - 3, height, width"]
+                current_pixels: torch.Tensor = vae_decode(
                     real_history_latents[:, :, :section_latent_frames], vae
                 ).cpu()
-                history_pixels = soft_append_bcthw(
+                # Float32[torch.Tensor, "1, 3, *, height, width"]
+                history_pixels: torch.Tensor = soft_append_bcthw(
                     current_pixels, history_pixels, overlapped_frames
                 )
 
@@ -700,7 +709,7 @@ with block:
                 lambda x: x[0],
                 inputs=[example_quick_prompts],
                 outputs=prompt,
-                show_progress=False,
+                show_progress="hidden",
                 queue=False,
             )
 
