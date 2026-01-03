@@ -25,6 +25,7 @@ dependencies = [
     "tqdm>=4.67.1",
     "moviepy>=1.0.3",
     "huggingface-hub[hf-xet]>=0.31.4",
+    "hf-transfer>=0.1.9",
 ]
 
 [tool.uv]
